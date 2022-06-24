@@ -13,18 +13,18 @@ class MatchingLobby extends Page {
 
     onUpdate() {
         background(backColor);
-        textSize(headerTextSize);
+        textSize(headerTextSize * getScale);
         fill(textColor);
         text("Matching Lobby", width / 2, height / 10);
-        textSize(textsSize);
-        text("🔃", width - 50, 50);
+        textSize(textsSize * getScale);
+        text("🔃", width - 50 * getScale, 50 * getScale);
         if (this.loading) {
-            text("Loading", width / 2, height / 2 + 100);
-            textSize(headerTextSize);
+            text("Loading", width / 2, height / 2 + 100 * getScale);
+            textSize(headerTextSize * getScale);
             push();
             translate(width / 2, height / 2);
             rotate(frameCount / 10);
-            text("↻", -2, 11);
+            text("↻", -2 * getScale, 11 * getScale);
             pop();
             return;
         }
@@ -33,11 +33,18 @@ class MatchingLobby extends Page {
         }
     }
 
+    onWindowResized() {
+        for (const [index, button] of this.buttons.entries()) {
+            button.pos.set(index % 2 ? 2 * width / 3 : width / 3, Math.floor(index / 2 + 2) * height / 10);
+            button.size.set(400 * getScale, 50 * getScale);
+        }
+    }
+
     onMousePress() {
         for (const button of this.buttons) {
             button.onMousePress();
         }
-        if (mouseX < width - 30 && mouseX > width - 70 && mouseY < 70 && mouseY > 30) {
+        if (mouseX < width - 30 * getScale && mouseX > width - 70 * getScale && mouseY < 70 * getScale && mouseY > 30 * getScale) {
             this.getLobbies();
         }
     }
@@ -49,7 +56,8 @@ class MatchingLobby extends Page {
 
     startGame(socket) {
         socket.on("matching:startGame", (opponent) => {
-            pageManager.push("matchingGamePage", { username: socketHelper.user.username, opponentname: opponent.username, room: opponent.id });
+            console.log("aa");
+            pageManager.push("matchingGamePage", { username: socketHelper.user.username, opponentname: opponent.username });
         });
         socket.on("matching:alreadyPlaying", () => {
             this.getLobbies();
@@ -63,7 +71,7 @@ class MatchingLobby extends Page {
             this.buttons = [];
             for (const lobby of lobbies) {
                 console.log(lobby);
-                const button = new TextButton(lobby.username, this.buttons.length % 2 ? 2 * width / 3 : width / 3, Math.floor(this.buttons.length / 2 + 2) * height / 10, 400, 50);
+                const button = new TextButton(lobby.username, this.buttons.length % 2 ? 2 * width / 3 : width / 3, Math.floor(this.buttons.length / 2 + 2) * height / 10, 400 * getScale, 50 * getScale);
                 button.setOnClickListener((focus) => this.lobbyButtonListener(focus, lobby));
                 this.buttons.push(button);
             }

@@ -1,34 +1,16 @@
 class Board {
 
   constructor(args) {
-    this.socket = args.socket;
-    this.first = new Player(args.username, this.offX / 2, height / 2);
-    this.second = new Player(args.opponentname, width - this.offX / 2, height / 2);
+    this.first = new Player(args.username, 500 * getScale, height / 2);
+    this.second = new Player(args.opponentname, 1333 * getScale, height / 2);
     this.animation = false;
     this.handleNewBoard();
     this.newBoard();
   }
 
-  render() {
-    strokeWeight(10);
+  onUpdate() {
     if (this.animation) {
       if (millis() - this.startMs > 1000) {
-        if (this.fir.type == this.sec.type) {
-          if (this.turn) {
-            this.second.addPoints(this.combo ? 20 : 10);
-            this.combo = !this.combo;
-          } else {
-            this.first.addPoints(this.combo ? 20 : 10);
-            this.combo = !this.combo;
-          }
-        } else {
-          this.fir.revealed = false;
-          this.sec.revealed = false;
-          this.combo = false;
-        }
-        this.fir = null;
-        this.sec = null;
-        if (!this.combo) this.turn = !this.turn;
         this.animation = false;
       }
     }
@@ -37,38 +19,91 @@ class Board {
         this.grid[y][x].render();
       }
     }
-    strokeWeight(1);
-    this.first.render(!this.turn);
-    this.second.render(this.turn);
+    this.first.render(this.turn);
+    this.second.render(!this.turn);
+  }
+
+  onWindowResized() {
+    this.offX = (width - (cardWidth + 20) * (this.gridW - 1) * getScale) / 2;
+    this.first.setPos(this.offX / 2, height / 2);
+    this.second.setPos(width - this.offX / 2, height / 2);
+    for (let i = 0; i < this.gridH; i++) {
+      for (let j = 0; j < this.gridW; j++) {
+        if (!this.grid[i]) {
+          this.grid[i] = [];
+        }
+        this.grid[i][j].pos.set(j * (cardWidth + 20) * getScale + this.offX, i * (cardHeight + 20) * getScale + 200 * getScale);
+      }
+    }
   }
 
   newBoard() {
-    this.socket.emit("matching:newBoard");
+    console.log("new board requested");
+    socketHelper.socket.emit("matching:newBoard");
   }
 
   handleNewBoard() {
-    this.socket.on("matching:newBoard", (args) => {
-      const cards = args.cardList;
-      this.cards = [];
-      for (const card of cards) {
-        this.cards[i] = loadImage(`assets/${card}.png`);
+    socketHelper.socket.on("matching:board", (args) => {
+      console.log("new board");
+      const cards = {};
+      this.turn = args.turn == socketHelper.socket.id;
+      for (const card of args.cardList) {
+        loadImage(`assets/matching/${card}.png`, (ar) => cards[card] = ar, console.log);
       }
       this.gridW = args.gridW;
       this.gridH = args.gridH;
-      this.offX = (width - (cardWidth + 20) * (this.gridW - 1)) / 2;
+      this.offX = (width - (cardWidth + 20) * (this.gridW - 1) * getScale) / 2;
       this.first.setPos(this.offX / 2, height / 2);
       this.second.setPos(width - this.offX / 2, height / 2);
       this.grid = [];
-      const max = this.gridW * this.gridH / 2;
-      for (let i = 0; i < gridH; i++) {
-        for (let j = 0; j < gridW; j++) {
+      for (let i = 0; i < this.gridH; i++) {
+        for (let j = 0; j < this.gridW; j++) {
           if (!this.grid[i]) {
             this.grid[i] = [];
           }
-          this.grid[i][j] = new Card(j * (cardWidth + 20) + this.offX, i * (cardHeight + 20) + 200, cards);
+          this.grid[i][j] = new Card(j * (cardWidth + 20) * getScale + this.offX, i * (cardHeight + 20) * getScale + 200 * getScale, cards);
         }
       }
-    })
+    });
+    socketHelper.socket.on("matching:reveal", (args) => {
+      if (this.fir == null) {
+        this.fir = this.grid[args.y][args.x];
+        this.fir.reveal(args.type);
+        this.fir.setBorder(this.turn ? pageManager.getCurrentPage().redBorder : pageManager.getCurrentPage().blueBorder);
+      } else {
+        this.sec = this.grid[args.y][args.x];
+        this.sec.reveal(args.type);
+        this.sec.setBorder(this.turn ? pageManager.getCurrentPage().redBorder : pageManager.getCurrentPage().blueBorder);
+        this.animation = true;
+        this.startMs = millis();
+      }
+    });
+    socketHelper.socket.on("matching:correct", (args) => {
+      setTimeout(() => {
+        if (this.turn) {
+          this.first.addPoints(args.points);
+        } else {
+          this.second.addPoints(args.points);
+        }
+        this.turn = socketHelper.socket.id == args.turn;
+        this.fir = null;
+        this.sec = null;
+      }, 1000);
+    });
+    socketHelper.socket.on("matching:incorrect", (args) => {
+      setTimeout(() => {
+        this.turn = socketHelper.socket.id == args.turn;
+        this.fir.unreveal();
+        //TODO find why this.sec becomes null
+        this.sec.unreveal();
+        this.fir = null;
+        this.sec = null;
+      }, 1000);
+    });
+    socketHelper.socket.on("matching:waitForNewBoard", () => {
+      //TODO show the user a waiting screen with cancel button
+      //Additionally make a notification system like bottom toast
+    });
   }
 
   reset() {
@@ -81,22 +116,12 @@ class Board {
     this.newBoard();
   }
 
-  pressed() {
+  onMousePress() {
     if (this.animation || this.second.turn) return;
     for (let y = 0; y < this.gridH; y++) {
       for (let x = 0; x < this.gridW; x++) {
         if (this.grid[y][x].pressed() && !this.grid[y][x].revealed) {
-          if (this.fir == null) {
-            this.socket.emit("matching:firstCard", { x, y });
-            this.fir = this.grid[y][x];
-            this.fir.setOutline(this.turn ? color(255, 0, 0) : color(0, 0, 255));
-          } else {
-            this.sec = this.grid[y][x];
-            this.sec.setOutline(this.turn ? color(255, 0, 0) : color(0, 0, 255));
-            this.animation = true;
-            this.startMs = millis();
-          }
-          this.grid[y][x].revealed = true;
+          socketHelper.socket.emit("matching:openCard", { x, y });
           return;
         }
       }

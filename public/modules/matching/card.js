@@ -1,22 +1,19 @@
 class Card {
 
-  constructor(x, y) {
-    this.pos = createVector(x, y, cards);
+  constructor(x, y, cards) {
+    this.pos = createVector(x, y);
     this.mystery = pageManager.getCurrentPage().mystery;
-    this.cards = this.cards;
+    this.cards = cards;
+    this.revealed = false;
   }
 
   render() {
-    image(this.revealed ? this.cards[this.type] : this.mystery, this.pos.x, this.pos.y, cardWidth, cardHeight);
-    stroke(this.outline ? this.outline : color(13, 65, 67));
-    noFill();
-    if (this.revealed) rect(this.pos.x, this.pos.y, cardWidth, cardHeight);
-    fill(255);
-    stroke(13, 65, 67);
+    image(this.revealed ? this.cards[this.type] : this.mystery, this.pos.x, this.pos.y, cardWidth * getScale, cardHeight * getScale);
+    if (this.revealed) image(this.border, this.pos.x, this.pos.y - (borderHeight - cardHeight) / 3 * getScale, borderWidth * getScale, borderHeight * getScale);
   }
 
-  setOutline(col) {
-    this.outline = col;
+  setBorder(border) {
+    this.border = border;
   }
 
   reveal(type) {
@@ -24,8 +21,13 @@ class Card {
     this.revealed = true;
   }
 
+  unreveal() {
+    this.type = null;
+    this.revealed = false;
+  }
+
   pressed() {
-    if (mouseX > this.pos.x - cardWidth / 2 && mouseX < this.pos.x + cardWidth / 2 && mouseY > this.pos.y - cardHeight / 2 && mouseY < this.pos.y + cardHeight / 2) {
+    if (mouseX > this.pos.x - cardWidth / 2 * getScale && mouseX < this.pos.x + cardWidth / 2 * getScale && mouseY > this.pos.y - cardHeight / 2 * getScale && mouseY < this.pos.y + cardHeight / 2 * getScale) {
       return true;
     }
     return false;

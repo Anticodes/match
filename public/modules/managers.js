@@ -19,10 +19,10 @@ class PageManager {
     }
 
     pop() {
-        if (this.pageTree.length > 1)
+        if (this.pageTree.length > 1) {
             this.pageTree.pop();
-        else
-            console.log("nereye kocum");
+            this.onWindowResized();
+        } else console.log("nereye kocum");
     }
 
     getCurrentPage() {
@@ -32,8 +32,12 @@ class PageManager {
     onUpdate() {
         this.pageTree[this.pageTree.length - 1].onUpdate();
         if (this.pageTree.length > 1) {
-            text("⬅️", 50, 50);
+            text("⬅️", 50 * getScale, 50 * getScale);
         }
+    }
+
+    onWindowResized() {
+        this.pageTree[this.pageTree.length - 1].onWindowResized();
     }
 
     onMousePress() {
@@ -47,8 +51,8 @@ class PageManager {
     onMouseRelease() {
         this.pageTree[this.pageTree.length - 1].onMouseRelease();
         if (this.pageTree.length > 1) {
-            if (mouseX < 70 && mouseX > 30 && mouseY < 70 && mouseY > 30) {
-                this.pageTree.pop();
+            if (mouseX < 70 * getScale && mouseX > 30 * getScale && mouseY < 70 * getScale && mouseY > 30 * getScale) {
+                this.pop();
             }
         }
     }

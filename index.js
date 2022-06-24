@@ -11,10 +11,8 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
-server.listen(port);
-app.use(express.static("public"));
+app.use("/", express.static("public"));
 app.use("/assets", express.static("assets"));
-console.log(`Server is running on ${port}`);
 
 const onConnection = (socket) => {
     authEventHandler(io, socket);
@@ -22,3 +20,6 @@ const onConnection = (socket) => {
 }
 
 io.on("connection", onConnection);
+
+server.listen(port);
+console.log(`Server is running on ${port}`);

@@ -42,7 +42,7 @@ class TextButton extends Button {
     onUpdate() {
         super.onUpdate();
         fill(textColor);
-        textSize(textsSize);
+        textSize(textsSize * getScale);
         text(this.text, this.pos.x, this.pos.y);
     }
 }
@@ -80,7 +80,7 @@ class Textbox {
             this.blinking = !this.blinking;
         }
         fill(64);
-        textSize(textsSize);
+        textSize(textsSize * getScale);
         rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.size.y / 4);
         let output = this.text;
         if (this.isObscured) {
@@ -116,7 +116,7 @@ class Textbox {
             this.listener(this.text);
         } else if (keyCode < 91 && keyCode > 47) {
             this.text += key;
-        }else{
+        } else {
             console.log(key, keyCode);
         }
     }

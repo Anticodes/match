@@ -19,10 +19,6 @@ class NetworkHelper {
     }
 
     getLobby(namespace, start, end, cb) {
-        this.socket.emit(`${namespace}:getLobby`, { start, end });
-        this.socket.on("getLobby", (lobbies) => {
-            console.log(lobbies);
-            cb(lobbies);
-        })
+        this.socket.emit(`${namespace}:getLobby`, { start, end }, cb);
     }
 }
