@@ -1,3 +1,10 @@
+import { TextButton } from "../input.js";
+import Page from "../pages.js";
+import { textsSize } from "../constants.js";
+import Board from "./board.js";
+
+const { loadImage, noSmooth, textAlign, rectMode, imageMode, textSize, background, image, width, height, getScale, CENTER } = import("../../index.js");
+
 class MatchingGame extends Page {
 
     onCreate(args) {
@@ -39,3 +46,5 @@ class MatchingGame extends Page {
         this.reset.onMousePress();
     }
 }
+
+export const matchingGamePage = new MatchingGame();

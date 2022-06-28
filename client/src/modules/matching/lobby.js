@@ -1,3 +1,11 @@
+import { TextButton } from "../input.js";
+import Page from "../pages.js";
+import { textsSize, backColor, textColor, headerTextSize } from "../constants.js";
+import { networkManager } from "../managers/network.js";
+import { pageManager } from "../managers/page.js";
+
+const { noStroke, fill, text, push, pop, translate, rotate, textAlign, rectMode, imageMode, textSize, background, width, height, getScale, frameCount, mouseX, mouseY, CENTER } = import("../../index.js");
+
 class MatchingLobby extends Page {
 
     onCreate() {
@@ -51,13 +59,13 @@ class MatchingLobby extends Page {
 
     joinLobby() {
         this.page = 0;
-        socketHelper.joinLobby("matching", this.startGame);
+        networkManager.joinLobby("matching", this.startGame);
     }
 
     startGame(socket) {
         socket.on("matching:startGame", (opponent) => {
             console.log("aa");
-            pageManager.push("matchingGamePage", { username: socketHelper.user.username, opponentname: opponent.username });
+            pageManager.push("matchingGamePage", { username: networkManager.user.username, opponentname: opponent.username });
         });
         socket.on("matching:alreadyPlaying", () => {
             this.getLobbies();
@@ -66,7 +74,7 @@ class MatchingLobby extends Page {
 
     getLobbies() {
         this.loading = true;
-        socketHelper.getLobby("matching", 0 + this.page * 16, 16 + this.page * 16, (lobbies) => {
+        networkManager.getLobby("matching", 0 + this.page * 16, 16 + this.page * 16, (lobbies) => {
             this.loading = false;
             this.buttons = [];
             for (const lobby of lobbies) {
@@ -80,7 +88,9 @@ class MatchingLobby extends Page {
 
     lobbyButtonListener(focus, lobby) {
         if (focus) {
-            socketHelper.joinRoom("matching", lobby);
+            networkManager.joinRoom("matching", lobby);
         }
     }
 }
+
+export const matchingLobbyPage = new MatchingLobby();

@@ -1,3 +1,7 @@
+import { textColor, textsSize } from "./constants.js";
+
+const { createVector, fill, rect, mouseX, mouseY, textSize, text, image, millis, getScale, keyCode, BACKSPACE, RETURN, key } = import("../index.js");
+
 class Button {
 
     constructor(x, y, w, h) {
@@ -90,7 +94,7 @@ class Textbox {
         }
         if (this.text.length > 0 || this.isFocused) {
             fill(235);
-            if (this.blinking && this.isFocused) text(output + '|', this.pos.x + 3, this.pos.y, this.size.x, this.size.y);
+            if (this.blinking && this.isFocused) text(output + "|", this.pos.x + 3, this.pos.y, this.size.x, this.size.y);
             else text(output, this.pos.x + 3, this.pos.y, this.size.x, this.size.y);
         } else {
             fill(150, 180, 220, 128);
@@ -138,3 +142,10 @@ class Textbox {
         return this.pos.x - this.size.x / 2 < mouseX && this.pos.x + this.size.x / 2 > mouseX && this.pos.y - this.size.y / 2 < mouseY && this.pos.y + this.size.y / 2 > mouseY;
     }
 }
+
+export {
+    Button,
+    TextButton,
+    ImageButton,
+    Textbox
+};

@@ -1,14 +1,20 @@
+import { mainPage, loginPage, gameSelectorPage } from "../pages.js";
+import { matchingLobbyPage } from "../matching/lobby.js";
+import { matchingGamePage } from "../matching/matching.js";
+
+const { text, getScale, mouseX, mouseY } = import("../../index.js");
+
 class PageManager {
 
     constructor() {
         this.pageTree = [];
         this.pages = {
-            mainPage: new MainPage(),
-            loginPage: new LoginPage(),
-            gameSelectorPage: new GameSelector(),
-            matchingLobbyPage: new MatchingLobby(),
-            matchingGamePage: new MatchingGame()
-        }
+            mainPage,
+            loginPage,
+            gameSelectorPage,
+            matchingLobbyPage,
+            matchingGamePage
+        };
         this.push("mainPage");
     }
 
@@ -65,3 +71,5 @@ class PageManager {
         this.pageTree[this.pageTree.length - 1].onKeyRelease();
     }
 }
+
+export const pageManager = new PageManager();

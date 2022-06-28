@@ -1,3 +1,7 @@
+import { textsSize } from "../constants.js";
+
+const { millis, image, width, height, max, sq, createGraphics, CENTER } = import("../../index.js");
+
 class ToastManager {
 
     constructor() {
@@ -42,16 +46,18 @@ class ToastManager {
     dialog(header, description, defaultAction, secondaryAction) {
         const graphic = createGraphics(width, height);
         this.overlay(graphic);
-        
+        console.log(header, description, defaultAction, secondaryAction);
     }
 
     loading(cancelAction) {
         const graphic = createGraphics(width, height);
         this.overlay(graphic);
-
+        console.log(cancelAction);
     }
 
     overlay(graphic) {
         graphic.background(0, 48);
     }
 }
+
+export const toastManager = new ToastManager();
