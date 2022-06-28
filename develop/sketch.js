@@ -9,6 +9,7 @@ const aspectRatio = defaultWidth / defaultHeight;
 let getScale;
 
 var pageManager;
+var toastManager;
 var socketHelper;
 
 function setup() {
@@ -25,6 +26,7 @@ function setup() {
   canvas.parent("canvas-container")
   socketHelper = new NetworkHelper();
   pageManager = new PageManager();
+  toastManager = new ToastManager();
 }
 
 function windowResized() {
@@ -43,24 +45,30 @@ function windowResized() {
 
 function draw() {
   pageManager.onUpdate();
+  toastManager.onUpdate();
 }
 
 function mousePressed() {
   pageManager.onMousePress();
+  toastManager.onMousePress();
 }
 
 function mouseDragged() {
   pageManager.onMouseDrag();
+  toastManager.onMouseDrag();
 }
 
 function mouseReleased() {
   pageManager.onMouseRelease();
+  toastManager.onMouseRelease();
 }
 
 function keyPressed() {
   pageManager.onKeyPress();
+  toastManager.onKeyPress();
 }
 
 function keyReleased() {
   pageManager.onKeyRelease();
+  toastManager.onKeyRelease();
 }
