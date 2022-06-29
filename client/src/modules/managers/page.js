@@ -1,24 +1,26 @@
-import { mainPage, loginPage, gameSelectorPage } from "../pages.js";
-import { matchingLobbyPage } from "../matching/lobby.js";
-import { matchingGamePage } from "../matching/matching.js";
-
-const { text, getScale, mouseX, mouseY } = import("../../index.js");
+import sketch from "../../index.js";
+import { MainPage, LoginPage, GameSelector } from "../pages.js";
 
 class PageManager {
 
-    constructor() {
+    onCreate() {
         this.pageTree = [];
         this.pages = {
-            mainPage,
-            loginPage,
-            gameSelectorPage,
-            matchingLobbyPage,
-            matchingGamePage
+            mainPage: new MainPage(),
+            loginPage: new LoginPage(),
+            gameSelectorPage: new GameSelector()
         };
         this.push("mainPage");
     }
 
-    push(page, args) {
+    async push(page, args) {
+        if (!this.pages[page]) {
+            const category = page.split("/")[0];
+            const pages = Object.entries(await import(`../${category}/pages.js`));
+            for (const [key, value] of pages) {
+                this.pages[`${category}/${key}`] = value;
+            }
+        }
         this.pageTree = this.pageTree.filter(e => e != this.pages[page]);
         this.pageTree.push(this.pages[page]);
         this.pageTree[this.pageTree.length - 1].onCreate(args);
@@ -38,7 +40,7 @@ class PageManager {
     onUpdate() {
         this.pageTree[this.pageTree.length - 1].onUpdate();
         if (this.pageTree.length > 1) {
-            text("⬅️", 50 * getScale, 50 * getScale);
+            sketch.text("⬅️", 50 * sketch.getScale, 50 * sketch.getScale);
         }
     }
 
@@ -57,7 +59,7 @@ class PageManager {
     onMouseRelease() {
         this.pageTree[this.pageTree.length - 1].onMouseRelease();
         if (this.pageTree.length > 1) {
-            if (mouseX < 70 * getScale && mouseX > 30 * getScale && mouseY < 70 * getScale && mouseY > 30 * getScale) {
+            if (sketch.mouseX < 70 * sketch.getScale && sketch.mouseX > 30 * sketch.getScale && sketch.mouseY < 70 * sketch.getScale && sketch.mouseY > 30 * sketch.getScale) {
                 this.pop();
             }
         }

@@ -14,8 +14,8 @@ const sketch = new p5((sketch) => {
             width = sketch.windowHeight * aspectRatio;
         }
         sketch.getScale = height / defaultHeight;
-        let canvas = sketch.createCanvas(width, height);
-        canvas.parent("canvas-container");
+        sketch.createCanvas(width, height);
+        pageManager.onCreate();
     };
 
     sketch.windowResized = () => {

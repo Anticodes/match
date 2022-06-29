@@ -1,6 +1,5 @@
+import sketch from "../../index.js";
 import { textsSize } from "../constants.js";
-
-const { millis, image, width, height, max, sq, createGraphics, CENTER } = import("../../index.js");
 
 class ToastManager {
 
@@ -12,9 +11,9 @@ class ToastManager {
         const deleteIndexes = [];
         for (const [index, toast] of this.toasts.entries()) {
             if (toast.time) {
-                const x = millis() - toast.start;
-                image(toast.graphic, width / 2, height / 2 + max((sq(x) - (x - 250) * toast.time) / (250 * toast.time), 0) * height / 16, width, height);
-                if (millis() - toast.start > toast.time) {
+                const x = sketch.millis() - toast.start;
+                sketch.image(toast.graphic, sketch.width / 2, sketch.height / 2 + sketch.max((sketch.sq(x) - (x - 250) * toast.time) / (250 * toast.time), 0) * sketch.height / 16, sketch.width, sketch.height);
+                if (sketch.millis() - toast.start > toast.time) {
                     deleteIndexes.push(index);
                 }
             }
@@ -31,26 +30,26 @@ class ToastManager {
     onKeyRelease() { }
 
     text(string, time = 5000) {
-        const graphic = createGraphics(width, height);
+        const graphic = sketch.createGraphics(sketch.width, sketch.height);
         graphic.textSize(textsSize / 2);
         graphic.noStroke();
-        graphic.rectMode(CENTER);
-        graphic.textAlign(CENTER, CENTER);
+        graphic.rectMode(sketch.CENTER);
+        graphic.textAlign(sketch.CENTER, sketch.CENTER);
         graphic.fill(0, 48);
-        graphic.rect(width / 2, height - height / 16, string.length * 16, 32);
+        graphic.rect(sketch.width / 2, sketch.height - sketch.height / 16, string.length * 16, 32);
         graphic.fill(255);
-        graphic.text(string, width / 2, height - height / 16);
-        this.toasts.push({ graphic, time, start: millis() });
+        graphic.text(string, sketch.width / 2, sketch.height - sketch.height / 16);
+        this.toasts.push({ graphic, time, start: sketch.millis() });
     }
 
     dialog(header, description, defaultAction, secondaryAction) {
-        const graphic = createGraphics(width, height);
+        const graphic = sketch.createGraphics(sketch.width, sketch.height);
         this.overlay(graphic);
         console.log(header, description, defaultAction, secondaryAction);
     }
 
     loading(cancelAction) {
-        const graphic = createGraphics(width, height);
+        const graphic = sketch.createGraphics(sketch.width, sketch.height);
         this.overlay(graphic);
         console.log(cancelAction);
     }

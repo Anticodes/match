@@ -10,7 +10,12 @@ const mode = process.env.NODE_ENV;
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:8080",
+        methods: ["GET", "POST"]
+    }
+});
 
 if (mode === "development") {
     app.use("/", express.static("develop"));

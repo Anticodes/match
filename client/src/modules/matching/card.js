@@ -1,20 +1,19 @@
+import sketch from "../../index.js";
 import { cardHeight, cardWidth, borderHeight, borderWidth } from "./matchingConstants.js";
 import { pageManager } from "../managers/page.js";
-
-const { createVector, image, getScale, mouseX, mouseY } = import("../../index.js");
 
 class Card {
 
     constructor(x, y, cards) {
-        this.pos = createVector(x, y);
+        this.pos = sketch.createVector(x, y);
         this.mystery = pageManager.getCurrentPage().mystery;
         this.cards = cards;
         this.revealed = false;
     }
 
     render() {
-        image(this.revealed ? this.cards[this.type] : this.mystery, this.pos.x, this.pos.y, cardWidth * getScale, cardHeight * getScale);
-        if (this.revealed) image(this.border, this.pos.x, this.pos.y - (borderHeight - cardHeight) / 3 * getScale, borderWidth * getScale, borderHeight * getScale);
+        sketch.image(this.revealed ? this.cards[this.type] : this.mystery, this.pos.x, this.pos.y, cardWidth * sketch.getScale, cardHeight * sketch.getScale);
+        if (this.revealed) sketch.image(this.border, this.pos.x, this.pos.y - (borderHeight - cardHeight) / 3 * sketch.getScale, borderWidth * sketch.getScale, borderHeight * sketch.getScale);
     }
 
     setBorder(border) {
@@ -32,7 +31,7 @@ class Card {
     }
 
     pressed() {
-        if (mouseX > this.pos.x - cardWidth / 2 * getScale && mouseX < this.pos.x + cardWidth / 2 * getScale && mouseY > this.pos.y - cardHeight / 2 * getScale && mouseY < this.pos.y + cardHeight / 2 * getScale) {
+        if (sketch.mouseX > this.pos.x - cardWidth / 2 * sketch.getScale && sketch.mouseX < this.pos.x + cardWidth / 2 * sketch.getScale && sketch.mouseY > this.pos.y - cardHeight / 2 * sketch.getScale && sketch.mouseY < this.pos.y + cardHeight / 2 * sketch.getScale) {
             return true;
         }
         return false;

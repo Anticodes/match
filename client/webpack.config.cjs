@@ -14,6 +14,11 @@ const config = {
     devServer: {
         open: true,
         host: "localhost",
+        proxy: {
+            "/assets": {
+                target: "http://localhost:3000"
+            }
+        }
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -43,8 +48,8 @@ const config = {
 module.exports = () => {
     if (isProduction) {
         config.mode = "production";
-        
-        
+
+
     } else {
         config.mode = "development";
     }

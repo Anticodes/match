@@ -1,18 +1,17 @@
+import sketch from "../../index.js";
+import { Page } from "../pages.js";
 import { TextButton } from "../input.js";
-import Page from "../pages.js";
 import { textsSize, backColor, textColor, headerTextSize } from "../constants.js";
 import { networkManager } from "../managers/network.js";
 import { pageManager } from "../managers/page.js";
 
-const { noStroke, fill, text, push, pop, translate, rotate, textAlign, rectMode, imageMode, textSize, background, width, height, getScale, frameCount, mouseX, mouseY, CENTER } = import("../../index.js");
-
 class MatchingLobby extends Page {
 
     onCreate() {
-        rectMode(CENTER);
-        textAlign(CENTER, CENTER);
-        imageMode(CENTER);
-        noStroke();
+        sketch.rectMode(sketch.CENTER);
+        sketch.textAlign(sketch.CENTER, sketch.CENTER);
+        sketch.imageMode(sketch.CENTER);
+        sketch.noStroke();
         this.loading = true;
         this.buttons = [];
         this.joinLobby();
@@ -20,20 +19,20 @@ class MatchingLobby extends Page {
     }
 
     onUpdate() {
-        background(backColor);
-        textSize(headerTextSize * getScale);
-        fill(textColor);
-        text("Matching Lobby", width / 2, height / 10);
-        textSize(textsSize * getScale);
-        text("🔃", width - 50 * getScale, 50 * getScale);
+        sketch.background(backColor);
+        sketch.textSize(headerTextSize * sketch.getScale);
+        sketch.fill(textColor);
+        sketch.text("Matching Lobby", sketch.width / 2, sketch.height / 10);
+        sketch.textSize(textsSize * sketch.getScale);
+        sketch.text("🔃", sketch.width - 50 * sketch.getScale, 50 * sketch.getScale);
         if (this.loading) {
-            text("Loading", width / 2, height / 2 + 100 * getScale);
-            textSize(headerTextSize * getScale);
-            push();
-            translate(width / 2, height / 2);
-            rotate(frameCount / 10);
-            text("↻", -2 * getScale, 11 * getScale);
-            pop();
+            sketch.text("Loading", sketch.width / 2, sketch.height / 2 + 100 * sketch.getScale);
+            sketch.textSize(headerTextSize * sketch.getScale);
+            sketch.push();
+            sketch.translate(sketch.width / 2, sketch.height / 2);
+            sketch.rotate(sketch.frameCount / 10);
+            sketch.text("↻", -2 * sketch.getScale, 11 * sketch.getScale);
+            sketch.pop();
             return;
         }
         for (const button of this.buttons) {
@@ -43,8 +42,8 @@ class MatchingLobby extends Page {
 
     onWindowResized() {
         for (const [index, button] of this.buttons.entries()) {
-            button.pos.set(index % 2 ? 2 * width / 3 : width / 3, Math.floor(index / 2 + 2) * height / 10);
-            button.size.set(400 * getScale, 50 * getScale);
+            button.pos.set(index % 2 ? 2 * sketch.width / 3 : sketch.width / 3, Math.floor(index / 2 + 2) * sketch.height / 10);
+            button.size.set(400 * sketch.getScale, 50 * sketch.getScale);
         }
     }
 
@@ -52,7 +51,7 @@ class MatchingLobby extends Page {
         for (const button of this.buttons) {
             button.onMousePress();
         }
-        if (mouseX < width - 30 * getScale && mouseX > width - 70 * getScale && mouseY < 70 * getScale && mouseY > 30 * getScale) {
+        if (sketch.mouseX < sketch.width - 30 * sketch.getScale && sketch.mouseX > sketch.width - 70 * sketch.getScale && sketch.mouseY < 70 * sketch.getScale && sketch.mouseY > 30 * sketch.getScale) {
             this.getLobbies();
         }
     }
@@ -64,8 +63,7 @@ class MatchingLobby extends Page {
 
     startGame(socket) {
         socket.on("matching:startGame", (opponent) => {
-            console.log("aa");
-            pageManager.push("matchingGamePage", { username: networkManager.user.username, opponentname: opponent.username });
+            pageManager.push("matching/matchingGamePage", { username: networkManager.user.username, opponentname: opponent.username });
         });
         socket.on("matching:alreadyPlaying", () => {
             this.getLobbies();
@@ -78,8 +76,7 @@ class MatchingLobby extends Page {
             this.loading = false;
             this.buttons = [];
             for (const lobby of lobbies) {
-                console.log(lobby);
-                const button = new TextButton(lobby.username, this.buttons.length % 2 ? 2 * width / 3 : width / 3, Math.floor(this.buttons.length / 2 + 2) * height / 10, 400 * getScale, 50 * getScale);
+                const button = new TextButton(lobby.username, this.buttons.length % 2 ? 2 * sketch.width / 3 : sketch.width / 3, Math.floor(this.buttons.length / 2 + 2) * sketch.height / 10, 400 * sketch.getScale, 50 * sketch.getScale);
                 button.setOnClickListener((focus) => this.lobbyButtonListener(focus, lobby));
                 this.buttons.push(button);
             }

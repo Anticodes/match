@@ -1,16 +1,15 @@
+import sketch from "../../index.js";
+import Player from "./player.js";
+import Card from "./card.js";
 import { cardWidth, cardHeight } from "./matchingConstants.js";
 import { networkManager } from "../managers/network.js";
 import { pageManager } from "../managers/page.js";
-import Player from "./player.js";
-import Card from "./card.js";
-
-const { getScale, height, millis, width, loadImage } = import("../../index.js");
 
 class Board {
 
     constructor(args) {
-        this.first = new Player(args.username, 500 * getScale, height / 2);
-        this.second = new Player(args.opponentname, 1333 * getScale, height / 2);
+        this.first = new Player(args.username, 500 * sketch.getScale, sketch.height / 2);
+        this.second = new Player(args.opponentname, 1333 * sketch.getScale, sketch.height / 2);
         this.animation = false;
         this.handleNewBoard();
         this.newBoard();
@@ -18,7 +17,7 @@ class Board {
 
     onUpdate() {
         if (this.animation) {
-            if (millis() - this.startMs > 1000) {
+            if (sketch.millis() - this.startMs > 1000) {
                 this.animation = false;
             }
         }
@@ -32,44 +31,44 @@ class Board {
     }
 
     onWindowResized() {
-        this.offX = (width - (cardWidth + 20) * (this.gridW - 1) * getScale) / 2;
-        this.first.setPos(this.offX / 2, height / 2);
-        this.second.setPos(width - this.offX / 2, height / 2);
+        this.offX = (sketch.width - (cardWidth + 20) * (this.gridW - 1) * sketch.getScale) / 2;
+        this.first.setPos(this.offX / 2, sketch.height / 2);
+        this.second.setPos(sketch.width - this.offX / 2, sketch.height / 2);
         for (let i = 0; i < this.gridH; i++) {
             for (let j = 0; j < this.gridW; j++) {
                 if (!this.grid[i]) {
                     this.grid[i] = [];
                 }
-                this.grid[i][j].pos.set(j * (cardWidth + 20) * getScale + this.offX, i * (cardHeight + 20) * getScale + 200 * getScale);
+                this.grid[i][j].pos.set(j * (cardWidth + 20) * sketch.getScale + this.offX, i * (cardHeight + 20) * sketch.getScale + 200 * sketch.getScale);
             }
         }
     }
 
     newBoard() {
-        console.log("new board requested");
+        console.log("Requested a new board");
         networkManager.socket.emit("matching:newBoard");
     }
 
     handleNewBoard() {
         networkManager.socket.on("matching:board", (args) => {
-            console.log("new board");
+            console.log("New board is here");
             const cards = {};
             this.turn = args.turn == networkManager.socket.id;
             for (const card of args.cardList) {
-                loadImage(`assets/matching/${card}.png`, (ar) => cards[card] = ar, console.log);
+                sketch.loadImage(`/assets/matching/${card}.png`, (ar) => cards[card] = ar, console.log);
             }
             this.gridW = args.gridW;
             this.gridH = args.gridH;
-            this.offX = (width - (cardWidth + 20) * (this.gridW - 1) * getScale) / 2;
-            this.first.setPos(this.offX / 2, height / 2);
-            this.second.setPos(width - this.offX / 2, height / 2);
+            this.offX = (sketch.width - (cardWidth + 20) * (this.gridW - 1) * sketch.getScale) / 2;
+            this.first.setPos(this.offX / 2, sketch.height / 2);
+            this.second.setPos(sketch.width - this.offX / 2, sketch.height / 2);
             this.grid = [];
             for (let i = 0; i < this.gridH; i++) {
                 for (let j = 0; j < this.gridW; j++) {
                     if (!this.grid[i]) {
                         this.grid[i] = [];
                     }
-                    this.grid[i][j] = new Card(j * (cardWidth + 20) * getScale + this.offX, i * (cardHeight + 20) * getScale + 200 * getScale, cards);
+                    this.grid[i][j] = new Card(j * (cardWidth + 20) * sketch.getScale + this.offX, i * (cardHeight + 20) * sketch.getScale + 200 * sketch.getScale, cards);
                 }
             }
         });
@@ -83,7 +82,7 @@ class Board {
                 this.sec.reveal(args.type);
                 this.sec.setBorder(this.turn ? pageManager.getCurrentPage().redBorder : pageManager.getCurrentPage().blueBorder);
                 this.animation = true;
-                this.startMs = millis();
+                this.startMs = sketch.millis();
             }
         });
         networkManager.socket.on("matching:correct", (args) => {
