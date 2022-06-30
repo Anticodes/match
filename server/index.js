@@ -6,7 +6,6 @@ import gameEventHandler from "./games/games.js";
 import "dotenv/config";
 
 const port = process.env.PORT;
-const mode = process.env.NODE_ENV;
 
 const app = express();
 const server = createServer(app);
@@ -17,11 +16,7 @@ const io = new Server(server, {
     }
 });
 
-if (mode === "development") {
-    app.use("/", express.static("develop"));
-} else {
-    app.use("/", express.static("public"));
-}
+app.use("/", express.static("dist"));
 app.use("/assets", express.static("assets"));
 
 const onConnection = (socket) => {
