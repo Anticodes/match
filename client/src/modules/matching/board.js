@@ -10,16 +10,20 @@ class Board {
     constructor(args) {
         this.first = new Player(args.username, 500 * sketch.getScale, sketch.height / 2);
         this.second = new Player(args.opponentname, 1333 * sketch.getScale, sketch.height / 2);
-        this.animation = false;
+        this.animations = [];
         this.handleNewBoard();
         this.newBoard();
     }
 
     onUpdate() {
-        if (this.animation) {
-            if (sketch.millis() - this.startMs > 1000) {
-                this.animation = false;
+        if (this.animations) {
+            for (const animation of this.animations) {
+                if (sketch.millis() - animation.startMs > 1000) {
+                    animation.callback();
+                    animation.finished = true;
+                }
             }
+            this.animations = this.animations.filter(e => !e.finished);
         }
         for (let y = 0; y < this.gridH; y++) {
             for (let x = 0; x < this.gridW; x++) {
